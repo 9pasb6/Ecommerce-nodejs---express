@@ -11,4 +11,4 @@ const generateId =()=> {
     return generateId.counter;
   }
 
-module.exports = generateId;
+export default generateId;
