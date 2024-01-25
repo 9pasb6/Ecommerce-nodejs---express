@@ -3,12 +3,9 @@
 
 
 const generateId =()=> {
-    if (!generateId.counter) {
-      generateId.counter = 1;
-    } else {
-      generateId.counter++;
-    }
-    return generateId.counter;
+  const id = Math.random().toString(32).substring(2) + Date.now().toString(32)
+
+  return id
   }
 
 export default generateId;

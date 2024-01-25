@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1u867vob24o1hkuh6cit",
+    "title": "Panela",
+    "description": "Descripción 1",
+    "price": 17.3,
+    "thumbnail": "thumbnail1.jpg",
+    "code": "ewq1",
+    "stock": 0
+  },
+  {
+    "id": "i2t05cgjmug1hkuh6cj3",
+    "title": "Arroz",
+    "description": "Descripción 2",
+    "price": 5.2,
+    "thumbnail": "thumbnail2.jpg",
+    "code": "ewq2",
+    "stock": 0
+  },
+  {
+    "id": "uc9rnok29k1hl16ffvc",
+    "title": "Pollo KFC",
+    "description": "Descripción del KFC",
+    "price": 12.99,
+    "thumbnail": "nueva-imagen.jpg",
+    "code": "ewq123.KFC",
+    "stock": 1
+  },
+  {
+    "id": "1dvv5khmdog1hl171boe",
+    "title": "Pollo frisby",
+    "description": "Descripción del frisby",
+    "price": 12.99,
+    "thumbnail": "nueva-imagen.jpg",
+    "code": "ewq123.frisby",
+    "stock": 49
+  },
+  {
+    "id": "7ic30harj881hl17hls3",
+    "title": "Pan",
+    "description": "Descripción del pan",
+    "price": 12.99,
+    "thumbnail": "nueva-imagen.jpg",
+    "code": "ewq123.frisby",
+    "stock": 80
+  }
+]

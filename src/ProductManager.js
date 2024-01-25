@@ -32,40 +32,48 @@ class ProductManager {
 
     try {
       const existingProduct = this.products.find(product => product.id === newProduct.id);
+      console.log(existingProduct);
       if (existingProduct) {
         console.log('Error: Producto con el mismo id ya existe.');
-        return;
+        return null;
       }
 
       this.products.push(newProduct);
       this.saveProductsToBd();
       console.log('Producto agregado');
+      return newProduct;
     } catch (error) {
       console.log('Error al agregar el producto', error);
+      return null;
     }
   }
 
   saveProductsToBd() {
     try {
-      const data = this.products.map(product => JSON.stringify(product)).join('\n');
-      const filePath = path.join(__dirname, '../Persistence', 'PersistenciaBd.txt');
+      const data = JSON.stringify(this.products, null, 2); // Convierte el array completo a formato JSON con formato y tabulaciones
+      const filePath = path.join(__dirname, '../Persistence', 'ProductBd.json');
       fs.writeFileSync(filePath, data);
-      console.log('Productos guardados en el archivo');
+      console.log('Productos guardados en el archivo JSON');
     } catch (error) {
-      console.log('Error al guardar productos en el archivo', error);
+      console.log('Error al guardar productos en el archivo JSON', error);
     }
   }
+  
 
   loadProductsFromBd() {
     try {
-      const filePath = path.join(__dirname, '../Persistence', 'PersistenciaBd.txt');
+      const filePath = path.join(__dirname, '../Persistence', 'ProductBd.json');
       const data = fs.readFileSync(filePath, 'utf-8');
-      const productLines = data.split('\n');
-      this.products = productLines.map(line => JSON.parse(line.trim()));
+      
+      // Parsea el contenido JSON del archivo
+      this.products = JSON.parse(data);
+  
+      console.log('Productos cargados desde el archivo JSON');
     } catch (error) {
-      console.log('Error al cargar productos desde el archivo', error);
+      console.log('Error al cargar productos desde el archivo JSON', error);
     }
   }
+  
 
   
   getProducts(limit) {
@@ -106,46 +114,113 @@ class ProductManager {
     }
   }
 
-  updateProducts(updatedProduct) {
-    const indexToUpdate = this.products.findIndex(product => product.id === updatedProduct.id);
+  updateProducts(id, updatedProduct) {
+
+    const indexToUpdate = this.products.find(product => product.id.toString() === id.toString());
+    console.log(indexToUpdate)
+
+
+    if (!indexToUpdate) {
+      console.log('Error al actualizar el producto')
+      return null;
+    }
 
     try {
-      if (indexToUpdate !== -1) {
-        this.products[indexToUpdate] = updatedProduct;
+      
+        
+          indexToUpdate.title = updatedProduct.title,
+          indexToUpdate.description = updatedProduct.description,
+          indexToUpdate.price = updatedProduct.price,
+          indexToUpdate.thumbnail = updatedProduct.thumbnail,
+          indexToUpdate.code = updatedProduct.code,
+          indexToUpdate.stock = updatedProduct.stock,
+          this.saveProductsToBd();
+          console.log('Producto actualizado');
+          return true;
+       
+      
+    } catch (error) {
+      console.log(error);
+    }
+}
+
+
+
+
+  deleteProducts(id){
+
+    const findProduct = this.products.find(product => product.id.toString() === id.toString());
+
+    
+    if (!findProduct) {
+      console.log('Error al eliminar el producto')
+      return null
+    }
+    
+
+    try {
+      this.products = newArray
+      this.saveProductsToBd();
+      return true;
+    } catch (error) {
+      console.log(error)
+      return null
+    }
+
+  
+  }
+
+
+  updateStock(id, stock) {
+    const findProduct = this.products.find(product => product.id.toString() === id.toString());
+    console.log('desde updatestock' ,findProduct)
+
+     
+    if (!findProduct) {
+      console.log('Producto no encontrado')
+      return null
+    }
+
+    try {
+     
+        findProduct.stock = stock;
         this.saveProductsToBd();
-        console.log('Producto actualizado');
-      }
+        console.log('Stock del producto actualizado');
+        return true;
+      
     } catch {
-      console.log('Error al actualizar el producto');
+      console.log('Error al actualizar el stock del producto');
+      return null;
     }
   }
+
 }
 
 // Instancia de la clase
 const productManager = new ProductManager();
-
+//productManager.updateStock('1u867vob24o1hkuh6cit',5)
 // Agregar productos
-productManager.addProduct('Panela', 'Descripción 1', 17.300, 'thumbnail1.jpg', 'ewq1', 12);
-productManager.addProduct('Arroz', 'Descripción 2', 5.200, 'thumbnail2.jpg', 'ewq2', 15);
-productManager.addProduct('Agua', 'Descripción 2', 5.200, 'thumbnail2.jpg', 'ewq3', 15);
+// productManager.addProduct('Panela', 'Descripción 1', 17.300, 'thumbnail1.jpg', 'ewq1', 12);
+// productManager.addProduct('Arroz', 'Descripción 2', 5.200, 'thumbnail2.jpg', 'ewq2', 15);
+// productManager.addProduct('Agua', 'Descripción 2', 5.200, 'thumbnail2.jpg', 'ewq3', 15);
 
 // Mostrar todos los productos
-productManager.getProducts();
+//productManager.getProducts();
 
 // Buscar un producto por su id
-productManager.getProductById(4);
+//productManager.getProductById(4);
 
 // Producto a actualizar
-const productToUpdate = {
-  id: 1,
-  title: 'Agua de panela update',
-  description: 'Descripción update',
-  price: 29.99,
-  thumbnail: 'nueva-imagen.jpg',
-  code: 'ewq123',
-  stock: 120,
-};
+// const productToUpdate = {
+//   id: 1,
+//   title: 'Agua de panela update v2 ',
+//   description: 'Descripción update',
+//   price: 29.99,
+//   thumbnail: 'nueva-imagen.jpg',
+//   code: 'ewq123',
+//   stock: 120,
+// };
 
 // Actualizar un producto por su id
-productManager.updateProducts(productToUpdate);
+//productManager.updateProducts(productToUpdate);
 export default productManager;
