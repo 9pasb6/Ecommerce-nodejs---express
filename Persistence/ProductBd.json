@@ -36,12 +36,12 @@
     "stock": 49
   },
   {
-    "id": "7ic30harj881hl17hls3",
-    "title": "Pan",
-    "description": "Descripción del pan",
-    "price": 12.99,
-    "thumbnail": "nueva-imagen.jpg",
-    "code": "ewq123.frisby",
-    "stock": 80
+    "id": "q5eq5e8vag81hlm8voah",
+    "title": "miel",
+    "description": "descrip miel",
+    "price": "122000",
+    "thumbnail": "nose",
+    "code": "ress123434",
+    "stock": "32"
   }
 ]

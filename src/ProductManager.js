@@ -149,7 +149,7 @@ class ProductManager {
 
   deleteProducts(id){
 
-    const findProduct = this.products.find(product => product.id.toString() === id.toString());
+    const findProduct = this.products.filter(product => product.id.toString() !== id.toString());
 
     
     if (!findProduct) {
@@ -157,6 +157,7 @@ class ProductManager {
       return null
     }
     
+    const newArray = [...findProduct]
 
     try {
       this.products = newArray

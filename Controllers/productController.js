@@ -4,8 +4,18 @@ import productManager from '../src/ProductManager.js'
 const getProducts = (req, res) => {
     const { limit } = req.query;
     const products = productManager.getProducts(limit);
-    res.json({ products });
+    //res.json({ products });
+    res.render('home', { title: 'Lista de Productos', products });
   };
+
+  
+  const getRealTimeProducts = (req, res, io) => {
+    const { limit } = req.query;
+    const products = productManager.getProducts(limit);
+    res.render('realTimeProducts', { title: 'Lista de Productos en Tiempo Real', products });
+  };
+
+
 
 
 const getProductById = (req, res) => {
@@ -20,17 +30,15 @@ const getProductById = (req, res) => {
 }
 
 const createProduct = (req, res) => {
-    const {title, description, price, thumbnail, code, stock} = req.body;
+  const { title, description, price, thumbnail, code, stock } = req.body;
+  const newProduct = productManager.addProduct(title, description, price, thumbnail, code, stock);
 
-    const newProduct = productManager.addProduct(title, description, price, thumbnail, code, stock);
-    console.log(newProduct)
-
-    if (newProduct) {
-        res.json({ msg: 'Producto creado'});
-      }else{
-        res.status(404).json({ error: 'Error al crear el producto' });
-
-      }
+  if (newProduct) {
+    io.emit('updateProduct', productManager.getProducts());
+    res.json({ msg: 'Producto creado' });
+  } else {
+    res.status(404).json({ error: 'Error al crear el producto' });
+  }
 }
 
 const updateProduct = (req, res) => {
@@ -47,15 +55,15 @@ const updateProduct = (req, res) => {
 }
 
 const deleteProducts = (req, res) => {
+  const { pid } = req.params;
+  const deleteProduct = productManager.deleteProducts(pid);
 
-    const { pid } = req.params;
-    const deleteProducts = productManager.deleteProducts(pid)
-
-    if (deleteProducts) {
-        res.json({ msg: 'Producto eliminado con exito'});
-      } else {
-        res.status(404).json({ error: 'Producto no eliminado' });
-      }
+  if (deleteProduct) {
+     io.emit('updateProduct', productManager.getProducts());
+    res.json({ msg: 'Producto eliminado con éxito' });
+  } else {
+    res.status(404).json({ error: 'Producto no eliminado' });
+  }
 }
 
   export{
@@ -63,5 +71,6 @@ const deleteProducts = (req, res) => {
     getProductById,
     createProduct,
     updateProduct,
-    deleteProducts
+    deleteProducts,
+    getRealTimeProducts
   }

@@ -4,7 +4,8 @@ import {
     getProductById,
     createProduct,
     updateProduct,
-    deleteProducts
+    deleteProducts,
+    getRealTimeProducts
 
 } from '../Controllers/productController.js'
 
@@ -13,6 +14,10 @@ const router = express.Router()
 
 // endpoint para obtener productos
 router.get('/', getProducts);
+
+
+// endpoint para obtener productos en tiempo real
+router.get('/realtimeproducts', getRealTimeProducts);  
   
 // endpoint para obtener un producto por su id 
 router.get('/:pid', getProductById );

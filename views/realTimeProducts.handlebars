@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  <ul>
+    {{#each products}}
+      <li>{{ id }} - {{ title }} - {{ description }} - {{ price }} - {{ stock }} - {{ thumbnail }} - {{ code }}</li>
+    {{/each}}
+  </ul>
+  <form id="createProductForm">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required>
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" required>
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" required>
+    <label for="stock">Stock:</label>
+    <input type="number" id="stock" name="stock" required>
+    <label for="thumbnail">Thumbnail:</label>
+    <input type="text" id="thumbnail" name="thumbnail" required>
+    <label for="code">Code:</label>
+    <input type="text" id="code" name="code" required>
+    <button type="submit">Create Product</button>
+  </form>
+  <form id="deleteProductForm">
+    <label for="productId">Product ID to delete:</label>
+    <input type="text" id="productId" name="productId" required>
+    <button type="submit">Delete Product</button>
+  </form>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('updateProduct', (products) => {
+      // Actualizar la lista de productos en la vista
+      const productList = document.querySelector('ul');
+      productList.innerHTML = products.map(product => `<li>${product.id} - ${product.title} - ${product.description} - ${product.price} - ${product.stock} - ${product.thumbnail} - ${product.code}</li>`).join('');
+    });
+
+    document.getElementById('createProductForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const title = formData.get('title');
+      const description = formData.get('description');
+      const price = formData.get('price');
+      const thumbnail = formData.get('thumbnail');
+      const code = formData.get('code');
+      const stock = formData.get('stock');
+  
+      socket.emit('createProduct', { title, description, price,  thumbnail, code, stock });
+    });
+
+    document.getElementById('deleteProductForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const productIdToDelete = formData.get('productId');
+      socket.emit('deleteProduct', productIdToDelete);
+    });
+  </script>
+</body>
+</html>
