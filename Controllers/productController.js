@@ -1,4 +1,32 @@
+import Product from '../Models/Product.js';
 import productManager from '../src/ProductManager.js'
+
+
+
+
+
+
+
+const createProduct = async (req, res) => {
+  const newProduct = new Product(req.body)
+
+  try {
+    await newProduct.save();
+    return res.json({ msg: 'Prodcuto creado'})
+  } catch  {
+    res.status(404).json({ error: 'Error al crear el producto' });
+  }
+  // const { title, description, price, thumbnail, code, stock } = req.body;
+  // const newProduct = productManager.addProduct(title, description, price, thumbnail, code, stock);
+
+  // if (newProduct) {
+  //   io.emit('updateProduct', productManager.getProducts());
+  //   res.json({ msg: 'Producto creado' });
+  // } else {
+  //   res.status(404).json({ error: 'Error al crear el producto' });
+  // }
+}
+
 
 
 const getProducts = (req, res) => {
@@ -27,18 +55,6 @@ const getProductById = (req, res) => {
         res.status(404).json({ error: 'Producto no encontrado' });
       }
    
-}
-
-const createProduct = (req, res) => {
-  const { title, description, price, thumbnail, code, stock } = req.body;
-  const newProduct = productManager.addProduct(title, description, price, thumbnail, code, stock);
-
-  if (newProduct) {
-    io.emit('updateProduct', productManager.getProducts());
-    res.json({ msg: 'Producto creado' });
-  } else {
-    res.status(404).json({ error: 'Error al crear el producto' });
-  }
 }
 
 const updateProduct = (req, res) => {

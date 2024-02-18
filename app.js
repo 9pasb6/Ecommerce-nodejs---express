@@ -9,11 +9,19 @@ import productManager from './src/ProductManager.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import connectDB from './Config/db.js';
+import  dotenv from 'dotenv';
+
 
 
 const app = express();
 const PORT = 3000; 
-// const PORT = 8080; 
+
+
+// para las variables de entorno
+dotenv.config(); 
+ //conección de la BD mongodb
+connectDB();
 
 // Crear un servidor HTTP utilizando el servidor Express
 const server = http.createServer(app);
