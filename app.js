@@ -4,6 +4,7 @@ import http from 'http';
 import { Server } from 'socket.io'; 
 import productRoutes from './Routes/productRoutes.js'
 import cartRoutes from './Routes/cartRoutes.js'
+import messageRoutes from './Routes/messageRoutes.js'
 import handlebars from 'express-handlebars'
 import productManager from './src/ProductManager.js';
 import path from 'path';
@@ -11,6 +12,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import connectDB from './Config/db.js';
 import  dotenv from 'dotenv';
+
 
 
 
@@ -38,6 +40,11 @@ app.use('/api/products', productRoutes);
 
 // endpoint para el cart
 app.use('/api/cart', cartRoutes);
+
+// endpoint para el message
+app.use('/api/message', messageRoutes);
+
+
 
 //render del home.handlebars
 const __filename = fileURLToPath(import.meta.url);
