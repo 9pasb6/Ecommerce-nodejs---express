@@ -1,13 +1,5 @@
 import mongoose from "mongoose";
-
-
-// id: generateId(),
-//       title,
-//       description,
-//       price,
-//       thumbnail,
-//       code,
-//       stock,
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const productSchema = mongoose.Schema({
             
@@ -36,12 +28,17 @@ const productSchema = mongoose.Schema({
     stock: {
         type:Number,
         required: true
+    },
+    category:{
+        type: String,
+        required: true,
+        enum: ['Comida','Tecnologia','Ropa']
     }
 }, {
     timestamps: true // crea las conlumnas de creado y actualizado
     }  
 )
-
+productSchema.plugin(mongoosePaginate)
 const Product = mongoose.model("Product", productSchema)
 
 export default Product

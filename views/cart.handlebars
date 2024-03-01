@@ -1,0 +1,32 @@
+<!-- cart.handlebars -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+</head>
+<body>
+ 
+{{#if cart}}
+    <h3>Products in Cart</h3>
+    {{#each cart.products}}
+        <ul>
+            <li>
+                <strong>Product ID:</strong> {{this.product._id}} |
+                <strong>Quantity:</strong> {{this.quantity}}
+            </li>
+        </ul>
+    {{/each}}
+    {{#unless cart.products.length}}
+        <p>No products in this cart.</p>
+    {{/unless}}
+{{else}}
+    <p>No carts found.</p>
+{{/if}}
+
+<!-- Otras secciones de tu página según sea necesario -->
+
+</body>
+</html>

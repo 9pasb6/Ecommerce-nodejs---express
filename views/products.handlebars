@@ -1,0 +1,64 @@
+<!-- product.handlebars -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+</head>
+<body>
+    <h1>Product List</h1>
+    
+    {{#if products.length}}
+      <ul>
+        {{#each products}}
+          <li>
+            <strong>{{this.title}}</strong> - ${{this.price}}
+            <a href="products/{{this._id}}">View Details</a>
+            
+           <button onclick=addToCart('{{this._id}}')>Add to Cart</button>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>No products found.</p>
+    {{/if}}
+
+    {{#if hasNextPage}}
+      <a href="?page={{nextPage}}&limit={{limit}}">Next Page</a>
+    {{/if}}
+
+    {{#if hasPrevPage}}
+      <a href="?page={{prevPage}}&limit={{limit}}">Previous Page</a>
+    {{/if}}
+
+  <script>
+  function addToCart(id) {
+    // Segunda solicitud para agregar el producto al carrito recién creado
+    fetch(`/api/cart/65e229bdb7408eb5855d1ac3/product/${id}?quantity=${22}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ quantity: 1 }),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(productData => {
+        console.log('Producto agregado al carrito:', productData);
+        // Puedes realizar acciones adicionales aquí si es necesario
+      })
+      .catch(error => console.error('Error al agregar el producto al carrito:', error));
+  }
+</script>
+
+
+
+
+</body>
+</html>

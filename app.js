@@ -32,6 +32,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 
+
+
 // Middleware para procesar JSON
 app.use(express.json());
 

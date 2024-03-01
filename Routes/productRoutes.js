@@ -5,7 +5,8 @@ import {
     createProduct,
     updateProduct,
     deleteProducts,
-    getRealTimeProducts
+    getRealTimeProducts,
+    getProductsView
 
 } from '../Controllers/productController.js'
 
@@ -30,5 +31,6 @@ router.put('/:pid', updateProduct);
 
 // endpoint para eliminar un producto
 router.delete('/:pid', deleteProducts);
+
 
 export default router;

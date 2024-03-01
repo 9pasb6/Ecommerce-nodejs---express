@@ -31,111 +31,105 @@ const createCart = async (req, res) =>{
 //     }
 }
 
-const addProductToCart= async(req, res)=>{
-
+const addProductToCart = async (req, res) => {
     const { pid } = req.params;
     const { cid } = req.params;
-    const {quantity} = req.body;
+    const quantityParam = req.query.quantity;
 
-    const findProduct = await Product.findById(pid);
-    const findCart = await Cart.findById(cid);
+    // Convertir quantityParam a un número
+    const quantity = parseInt(quantityParam, 10);
 
-    if (!findProduct) {
-        return res.status(400).json({ msg: 'ID del producto no válido' });
-    }
-
-    if (!findCart) {
-        return res.status(400).json({ msg: 'ID del carrito no válido' });
-    }
-
-
+    console.log('ID del producto:', pid);
+console.log('ID del carrito:', cid);
+console.log('Cantidad solicitada:', quantity);
+    
 
     try {
-       
-        if (findCart.products.length !== 0) {
-            console.log('carrito no esta vacio')
+        const findProduct = await Product.findById(pid);
+        const findCart = await Cart.findById(cid);
 
-        const existingProduct = findCart.products.find(product => product._id.equals(findProduct._id));
-        console.log(existingProduct)
+        console.log('Producto encontrado:', findProduct);
+    console.log('Carrito encontrado:', findCart);
 
-    // if (existingProduct) {
-    //     // Si el producto ya existe, incrementa la cantidad
-    //     existingProduct.quantity += quantity;
-    // } else {
-    //     // Si no existe, agrega un nuevo objeto al array
-    //     findCart.products.push({
-    //         product: productId,
-    //         quantity: quantity
-    //     });
-    // }
-            
+        if (!findProduct) {
+            return res.status(400).json({ msg: 'ID del producto no válido' });
         }
 
+        if (!findCart) {
+            return res.status(400).json({ msg: 'ID del carrito no válido' });
+        }
+
+        if(findProduct.stock<quantity){
+            return res.status(400).json({ msg: 'Stock insuficiente' });
+        }
+
+        if (findCart.products.length !== 0) {
+            console.log('El carrito no está vacío');
+
+            const existingProductIndex = findCart.products.findIndex(product => product.product.equals(findProduct._id));
+
+            if (existingProductIndex !== -1) {
+                // Si el producto ya existe, incrementa la cantidad
+                findCart.products[existingProductIndex].quantity += quantity;
+                console.log('El producto ya existe en el carrito, se ha actualizado la cantidad:', findCart.products[existingProductIndex]);
+            } else {
+                // Si no existe, agrega un nuevo objeto al array
+                const newProduct = {
+                    product: findProduct._id,
+                    quantity: quantity,
+                };
+                findCart.products.push(newProduct);
+                await findCart.save();
+                return res.json({ msg: 'Producto nuevo agregado al carrito con éxito' });
+            }
+        }else{
+             // Resta la cantidad del producto al stock
+        
+        // Si no existe, agrega un nuevo objeto al array
         const newProduct = {
-            product: findProduct._id, 
-            quantity: quantity
+            product: findProduct._id,
+            quantity: quantity,
         };
-    
+       findCart.products.push(newProduct);
+       
+        }
+
+       
         findProduct.stock = findProduct.stock - quantity;
-        findProduct.save()
-
-        findCart.products.push(newProduct);
-
+        await findProduct.save();
+        // Guarda el carrito actualizado
         await findCart.save();
-        return res.json({ msg: 'Producto agregado al carrito con exito v2'});
-
-    } catch  {
-        const error = new Error('Acción no valida desde el getTask');
-        return res.status(401).json({ msg: error.message})
+        return res.json({ msg: 'Producto agregado al carrito con éxito' });
+        // return res.render('products',{ msg: 'Producto agregado al carrito con éxito' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: 'Error en el servidor' });
     }
-
-    // const findProduct = productManager.getProductById(pid);
-  
-    // if (findProduct) {
-    //     const productToAdd = cartManager.addProductToCart(cid,findProduct, quantity);
-    //     if(productToAdd){
-    //         res.json({
-    //             msg:'Producto agregado al carrito'
-    //         })
-    //     }else{
-    //         res.status(404).json({ error: 'Stock del producto insuficiente' });
-    //     }
-    // }else{
-    //     res.status(404).json({ error: 'Error al encontrar el producto' });
-
-    // }
 }
-    
-  const getProductsToCart = async (req, res) =>{
 
+    
+const getProductsToCart = async (req, res) => {
     const { cid } = req.params;
 
-    if(!mongoose.isValidObjectId(cid)){
+    if (!mongoose.isValidObjectId(cid)) {
         return res.status(400).json({ msg: 'ID del carrito no válido' });
     }
 
-    const cart = await Cart.findById(id);
-    console.log(`Carrito id ${cart}`)
+    try {
+        const cart = await Cart.findById(cid).populate('products');
+        console.log(`Carrito id ${cart}`);
 
-    //obtener los productos de ese carrito en especifico
-    const product = await Product.find().where("cart").equals(cart._id);
-    res.json({
-        cart,
-        product
-    })
+        // Renderizar la vista con los datos del carrito y los productos
+        // En tu controlador
+    res.render('cart', {cart: cart });
 
-    // const findCart = cartManager.getProductsToCart(cid)
+        //res.json( { cart });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: 'Error al mostrar los productos del carrito' });
+    }
+};
 
-    // if(findCart){
-    //     res.json({
-    //         findCart
-    //     })  
-    // }else{
-    //     res.status(404).json({ error: 'Error al encontrar el carrito' });
-    // }
-
-
-  }
 
 
 
