@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookies 🍪</title>
+</head>
+<body>
+   <div>
+     <h1>Send cookie</h1>
+    <form action="/api/cookie" method="post">
+    <label for="name">Name customer</label><br>
+    <input type="text" name="name" id="name" placeholder="Your name"><br>
+    <label for="email">Email</label><br>
+    <input type="email" name="email" id="email" placeholder="your email">
+    <button type="submit">Submit</button>
+    </form>
+   </div>
+
+   <div>
+    <h1>Get cookie</h1>
+     <form action="/api/cookie/getCookie" method="get">
+    
+    <button type="submit">Get cookie</button>
+    </form>
+   </div>
+
+
+   
+</body>
+</html>

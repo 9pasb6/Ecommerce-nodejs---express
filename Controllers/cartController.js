@@ -40,8 +40,8 @@ const addProductToCart = async (req, res) => {
     const quantity = parseInt(quantityParam, 10);
 
     console.log('ID del producto:', pid);
-console.log('ID del carrito:', cid);
-console.log('Cantidad solicitada:', quantity);
+    console.log('ID del carrito:', cid);
+    console.log('Cantidad solicitada:', quantity);
     
 
     try {
@@ -131,12 +131,75 @@ const getProductsToCart = async (req, res) => {
 };
 
 
+const deleteAllProducts = async (req,res) =>{
+
+    const {cid} = req.params
+
+    const findCart = await Cart.findById(cid).populate('products');
+
+    if (!findCart) {
+        return res.status(400).json({ msg: 'ID del carrito no válido' });
+    }
+
+    try {
+        
+        findCart.products = []
+        await findCart.save()
+        res.json({ msg: "Productos eliminados del carrito"})
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: 'Error del servidor' });
+    }
+
+}
+
+
+
+const deleteOneProduct = async (req, res) =>{
+
+    const {cid} = req.params
+    const {pid} = req.params
+
+    const findCart = await Cart.findById(cid)
+    const findProduct = await Product.findById(pid);
+    
+
+    if (!findCart) {
+        return res.status(400).json({ msg: 'ID del carrito no válido' });
+    }
+
+    if (!findProduct) {
+        return res.status(400).json({ msg: 'ID del producto no válido' });
+    }
+
+    try {
+
+       const cartUpdate = await Cart.updateOne(
+            { _id: cid },
+            { $pull: { products: { product: pid } } })
+
+            if ( cartUpdate) {
+                res.json({ msg: "Producto eliminado del carrito 🥵"})
+            }
+        
+        
+    
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: 'Error del servidor' });
+    }
+
+
+}
+
 
 
 export {
 
     createCart,
     addProductToCart,
-    getProductsToCart
+    getProductsToCart,
+    deleteAllProducts,
+    deleteOneProduct
     
 }

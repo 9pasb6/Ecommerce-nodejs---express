@@ -2,7 +2,10 @@ import  express  from "express";
 import {  
     createCart,
     addProductToCart,
-    getProductsToCart 
+    getProductsToCart,
+    deleteAllProducts,
+    deleteOneProduct
+
 } from "../Controllers/cartController.js";
 
 const router = express.Router()
@@ -12,7 +15,8 @@ const router = express.Router()
 router.post('/', createCart)
 router.post('/:cid/product/:pid', addProductToCart)
 router.get('/:cid', getProductsToCart)
-
+router.delete('/:cid', deleteAllProducts)
+router.delete('/:cid/product/:pid', deleteOneProduct)
 
 
 
