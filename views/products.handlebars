@@ -9,6 +9,8 @@
 </head>
 <body>
     <h1>Product List</h1>
+
+    <h2>Hi! {{first_name}}</h2>
     
     {{#if products.length}}
       <ul>
@@ -56,6 +58,15 @@
       .catch(error => console.error('Error al agregar el producto al carrito:', error));
   }
 </script>
+
+
+ <div>
+     <h1>Log Out 👋🏻</h1>
+    <form action="/api/session/logout" method="get">
+   
+    <button type="submit">Log Out</button>
+    </form>
+   </div>
 
 
 

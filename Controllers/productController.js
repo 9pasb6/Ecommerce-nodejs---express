@@ -30,6 +30,7 @@ const createProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
   const { limit, page } = req.query;
+  
 
   try {
     const options = {
@@ -47,6 +48,14 @@ const getProducts = async (req, res) => {
       { $limit: options.limit }, // Limitar el número de documentos por página
     ]);
 
+    const user = req.session.user
+    if(user){
+      console.log('session from products')
+      console.log( user)
+    }
+ 
+    
+
     res.render('products', {
       status: 'success',
       products: sortedProducts,
@@ -58,7 +67,8 @@ const getProducts = async (req, res) => {
       hasNextPage: product.hasNextPage,
       prevLink: product.prevLink,
       nextLink: product.nextLink,
-      limit: limit
+      limit: limit,
+      first_name:user.first_name,
     });
   } catch (error) {
     console.error(error);

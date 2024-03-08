@@ -6,6 +6,8 @@ import productRoutes from './Routes/productRoutes.js'
 import cartRoutes from './Routes/cartRoutes.js'
 import messageRoutes from './Routes/messageRoutes.js'
 import cookieRoutes from './Routes/cookieRoutes.js'
+import sessionRoutes from './Routes/sessionRoutes.js'
+import viewRoutes from './Routes/viewRoutes.js'
 import handlebars from 'express-handlebars'
 import productManager from './src/ProductManager.js';
 import path from 'path';
@@ -15,6 +17,9 @@ import connectDB from './Config/db.js';
 import  dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser'
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+
 
 
 
@@ -23,6 +28,8 @@ const PORT = 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+// Middleware para procesar JSON
+app.use(express.json());
 
 // para las variables de entorno
 dotenv.config(); 
@@ -38,11 +45,17 @@ const io = new Server(server);
 // Configuración del cookie parser
 app.use(cookieParser(process.env.COOKIE_KEY)); // llave de acceso a la cookie
 
+// configuración del session
+app.use(session({
+  store:MongoStore.create({
+    mongoUrl:`${process.env.MONGO_URI}`,
+    ttl:60
 
-
-
-// Middleware para procesar JSON
-app.use(express.json());
+  }),
+    secret: `${process.env.SECRET_SESSION}`,
+    resave: false,
+    saveUninitialized: false
+  }))
 
 // endpoint para los productos
 app.use('/api/products', productRoutes);
@@ -53,10 +66,16 @@ app.use('/api/cart', cartRoutes);
 // endpoint para el message
 app.use('/api/message', messageRoutes);
 
-// endpoint para el message
+// endpoint para la cookie
 app.use('/api/cookie', cookieRoutes);
 
-//app.use('/api/views')
+// endpoint para la session
+app.use('/api/session', sessionRoutes);
+
+// endpoint para la vista
+app.use('/api/view', viewRoutes);
+
+
 
 
 
