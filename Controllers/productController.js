@@ -51,7 +51,7 @@ const getProducts = async (req, res) => {
     const user = req.session.user
     if(user){
       console.log('session from products')
-      console.log( user)
+   
     }
  
     

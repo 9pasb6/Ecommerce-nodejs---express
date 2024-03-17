@@ -1,5 +1,7 @@
 import User from "../Models/User.js"
 import mongoose from 'mongoose'
+import generateJWT from "../Helpers/generateJWT.js"
+import generateId from "../Helpers/generateId.js"
 
 
 
@@ -39,18 +41,19 @@ const logIn = async (req, res) =>{
 
     const {email, password} = req.body
 
-
+// {email}
     const user = await User.findOne({email})
-    console.log(user)
+    console.log(user.email)
 
     if(!user){
         return res.json({msg: `User doesnt exist `})
     }
 
-    if(password !== user.password){
-        return res.json({msg: `Incorrect password`})
+    if(await user.confirmPassword(password)){
+    
+        generateJWT(user._id)
+        console.log('User autenticated - login')
     }
-
 
     try {
 
@@ -67,6 +70,7 @@ const logIn = async (req, res) =>{
          req.session.admin = true
          console.log(`Login succes `)
          return res.redirect('/api/products')
+        //  return res.json({ msg: "login success"})
 
 
     } catch (error) {
@@ -81,18 +85,32 @@ const logIn = async (req, res) =>{
 
 const logOut = async (req, res) =>{
 
-    const {first_name} = req.session.user
-    console.log(`Good Bye ${first_name}`)
+    if(!req.session.user){
+        return  res.json({msg: `Session doesnt exist `})
+    }
 
-    req.session.destroy ( error => {
-        if(!error){
-            console.log(`Log Out successfully`)
-            return res.redirect('/api/view/login')
-        }
+const {first_name, _id} = req.session.user    
     
-        return res.json({msg: `Log Out troubles`})
+const user = await User.findById(_id)
 
-    })
+
+req.session.destroy(async (error) => {
+    if (!error) {
+        try {
+            user.token = " ";
+            await user.save();
+            console.log(`Good Bye ${first_name}`);
+            console.log(`Log Out successfully`);
+            return res.redirect('/api/view/login');
+        } catch (saveError) {
+            console.error("Error saving user:", saveError);
+            return res.json({ msg: `Log Out troubles` });
+        }
+    }
+    
+    return res.json({ msg: `Log Out troubles` });
+});
+
 
 }
 
@@ -101,7 +119,7 @@ const register = async (req,res) =>{
 //const {first_name, last_name, email, age, password} = req.body
 
 const newUser = new User(req.body)
-
+newUser.token = generateId()
 try {
     console.log('register user')
     await newUser.save();
