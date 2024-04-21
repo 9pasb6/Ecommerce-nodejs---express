@@ -3,6 +3,7 @@ import Cart from '../Models/Cart.js'
 import cartManager from '../src/CartManager.js'
 import productManager from '../src/ProductManager.js'
 import Product from '../Models/Product.js'
+import Ticket from '../Models/Ticket.js';
 
 
 
@@ -193,6 +194,56 @@ const deleteOneProduct = async (req, res) =>{
 }
 
 
+const finalizePurchase = async (req, res) => {
+    const { cid } = req.params;
+    try {
+      const cart = await Cart.findById(cid).populate('products.product');
+      if (!cart) {
+        return res.status(404).json({ msg: 'Carrito no encontrado' });
+      }
+      
+      let totalAmount = 0;
+      const unavailableProducts = [];
+      const updatedProducts = [];
+  
+      // Revisar el stock de cada producto en el carrito
+      for (let item of cart.products) {
+        if (item.product.stock < item.quantity) {
+          unavailableProducts.push(item.product._id);
+        } else {
+          item.product.stock -= item.quantity;
+          updatedProducts.push(item.product);
+          totalAmount += item.quantity * item.product.price;
+        }
+      }
+  
+      if (unavailableProducts.length > 0) {
+        return res.status(400).json({ msg: 'No hay suficiente stock para algunos productos', productIds: unavailableProducts });
+      }
+  
+      // Guardar los productos actualizados
+      for (let product of updatedProducts) {
+        await product.save();
+      }
+  
+      // Crear el ticket de compra
+      const ticket = new Ticket({
+        amount: totalAmount,
+        purchaser: req.user.email // Asegúrate de que el email del usuario está disponible en req.user
+      });
+      await ticket.save();
+  
+      // Limpiar los productos del carrito que se compraron
+      cart.products = cart.products.filter(item => unavailableProducts.includes(item.product._id));
+      await cart.save();
+  
+      res.status(201).json({ ticket, msg: 'Compra realizada con éxito' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: 'Error del servidor al finalizar la compra' });
+    }
+  };
+  
 
 export {
 
@@ -200,6 +251,7 @@ export {
     addProductToCart,
     getProductsToCart,
     deleteAllProducts,
-    deleteOneProduct
+    deleteOneProduct,
+    finalizePurchase
     
 }

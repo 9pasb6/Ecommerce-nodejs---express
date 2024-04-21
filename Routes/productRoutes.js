@@ -5,32 +5,29 @@ import {
     createProduct,
     updateProduct,
     deleteProducts,
-    getRealTimeProducts,
-    getProductsView
+  
 
 } from '../Controllers/productController.js'
+import CheckAuth from "../middleware/checkAuth.js";
+import authorize from '../middleware/authorize.js';
 
 const router = express.Router()
 
 
 // endpoint para obtener productos
-router.get('/', getProducts);
-
-
-// endpoint para obtener productos en tiempo real
-router.get('/realtimeproducts', getRealTimeProducts);  
+router.get('/', getProducts); 
   
 // endpoint para obtener un producto por su id 
 router.get('/:pid', getProductById );
 
 // endpoint para crear un producto
-router.post('/', createProduct);
+router.post('/', CheckAuth, authorize('Admin') ,createProduct);
 
 // endpoint para actualizar un producto
-router.put('/:pid', updateProduct);
+router.put('/:pid', CheckAuth, authorize('Admin'), updateProduct);
 
 // endpoint para eliminar un producto
-router.delete('/:pid', deleteProducts);
+router.delete('/:pid', CheckAuth, authorize('Admin'), deleteProducts);
 
 
 export default router;

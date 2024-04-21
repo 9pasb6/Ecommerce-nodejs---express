@@ -5,7 +5,7 @@ import {
     register,
    
  } from "../Controllers/sessionController.js";
-import CheckAuth from "../middleware/checkAuth.js";
+
 
 
 
@@ -18,9 +18,6 @@ router.post('/login',   logIn)
 
 // log in endpoint
 router.post('/register',   register )
-
-// log in endpoint
-//router.get('/profile', CheckAuth ,  profile)
 
 // log in endpoint
 router.get('/logout',   logOut)

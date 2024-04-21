@@ -41,7 +41,7 @@ const logIn = async (req, res) =>{
 
     const {email, password} = req.body
 
-// {email}
+
     const user = await User.findOne({email})
     console.log(user.email)
 
@@ -49,28 +49,24 @@ const logIn = async (req, res) =>{
         return res.json({msg: `User doesnt exist `})
     }
 
-    if(await user.confirmPassword(password)){
     
-        generateJWT(user._id)
-        console.log('User autenticated - login')
-    }
 
     try {
 
         
-    if (user.email === process.env.EMAIL_ADMIN && user.password === process.env.PASSWORD_ADMIN) {
+   
+        if(await user.confirmPassword(password)){
+    
+            user.token = generateJWT(user._id)
+            console.log(user.token)
+            await user.save()
+            console.log('User autenticated - login')
+        }
         
-        user.role = 'Admin'
-        await user.save()
-
-    }
-
-        
-         req.session.user = user
-         req.session.admin = true
-         console.log(`Login succes `)
-         return res.redirect('/api/products')
-        //  return res.json({ msg: "login success"})
+    
+         
+        //  return res.redirect('/api/products')
+         return res.json({ msg: "login success"})
 
 
     } catch (error) {
