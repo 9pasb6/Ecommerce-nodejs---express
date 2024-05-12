@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
-import mongoosePaginate from 'mongoose-paginate-v2'
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const productSchema = mongoose.Schema({
-            
-    title:{
-        type:String,
+    title: {
+        type: String,
         required: true,
-        trim: true 
+        trim: true
     },
     description: {
         type: String,
@@ -14,31 +13,37 @@ const productSchema = mongoose.Schema({
         trim: true
     },
     price: {
-        type:Number,
+        type: Number,
         required: true
     },
     thumbnail: {
-        type:String,
+        type: String,
         required: true
     },
     code: {
-        type:String,
+        type: String,
         required: true
     },
     stock: {
-        type:Number,
+        type: Number,
         required: true
     },
-    category:{
+    category: {
         type: String,
         required: true,
-        enum: ['Comida','Tecnologia','Ropa']
+        enum: ['Comida', 'Tecnologia', 'Ropa']
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 }, {
     timestamps: true // crea las conlumnas de creado y actualizado
-    }  
-)
-productSchema.plugin(mongoosePaginate)
-const Product = mongoose.model("Product", productSchema)
+});
 
-export default Product
+// Aplicar el plugin de paginación de mongoose
+productSchema.plugin(mongoosePaginate);
+
+const Product = mongoose.model("Product", productSchema);
+
+export default Product;
