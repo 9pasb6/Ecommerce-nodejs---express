@@ -76,12 +76,14 @@ const logIn = async (req, res) => {
     }
     if (await user.confirmPassword(password)) {
         user.token = generateJWT(user._id);
+        user.last_connection = new Date(); // Actualiza la última conexión
         await user.save();
         res.json({ msg: "Ingreso exitoso", token: user.token });
     } else {
         res.status(401).json({ msg: 'Contraseña incorrecta' });
     }
 };
+
 
 // Método de registro de usuario
 const register = async (req, res) => {
@@ -105,6 +107,7 @@ const logOut = async (req, res) => {
     req.session.destroy(async (error) => {
         if (!error) {
             user.token = " ";
+            user.last_connection = new Date(); // Actualiza la última conexión
             await user.save();
             res.redirect('/api/view/login');
         } else {
@@ -113,23 +116,36 @@ const logOut = async (req, res) => {
     });
 };
 
+
 // Método para cambiar el rol de un usuario
 const changeUserRole = async (req, res) => {
     const { uid } = req.params;
-    const { newRole } = req.body; 
+    const { newRole } = req.body;
 
     try {
         const user = await User.findById(uid);
         if (!user) {
             return res.status(404).json({ msg: 'Usuario no encontrado' });
         }
-        user.role = newRole; 
+
+        if (newRole === 'Premium') {
+            const requiredDocuments = ['Identificación', 'Comprobante de domicilio', 'Comprobante de estado de cuenta'];
+            const userDocuments = user.documents.map(doc => doc.name);
+            const hasAllDocuments = requiredDocuments.every(doc => userDocuments.includes(doc));
+
+            if (!hasAllDocuments) {
+                return res.status(400).json({ msg: 'El usuario no ha terminado de procesar su documentación' });
+            }
+        }
+
+        user.role = newRole;
         await user.save();
         res.json({ msg: 'Rol actualizado correctamente' });
     } catch (error) {
         res.status(500).json({ msg: 'Error al actualizar el rol', error: error });
     }
 };
+
 
 
 // Vistas del usuario

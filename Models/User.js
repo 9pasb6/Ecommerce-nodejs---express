@@ -39,24 +39,26 @@ const userSchema = mongoose.Schema({
     },
     resetPasswordExpires: {
         type: Date
+    },
+    documents: [{
+        name: String,
+        reference: String
+    }],
+    last_connection: {
+        type: Date
     }
 }, {
-    timestamps: true // Crea las columnas de creado y actualizado
+    timestamps: true
 });
 
-// Hook de bcrypt para cifrar el password de los usuarios
 userSchema.pre('save', async function(next) {
-    // Este código se ejecutará antes de hacer un registro de un usuario en la BD
     if (!this.isModified("password")) {
-        // Verifica que el password no ha sido modificado, es decir, si no se ha modificado el password, no hagas nada
         next();
     }
     const salt = await bcrypt.genSalt(10);
-    // Finalmente
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Método para comparar el password form con el hasheado en la base de datos
 userSchema.methods.confirmPassword = async function(passwordForm) {
     return await bcrypt.compare(passwordForm, this.password);
 };
